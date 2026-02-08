@@ -16,6 +16,7 @@
 #include "common.h"
 #include "power.h"
 #include "wireless.h"
+#include "touch.h"
 
 Profile profiles[PROFILE_SLOTS];
 uint8_t profile_active_index = -1;
@@ -36,6 +37,11 @@ uint64_t hold_home_to_sleep_ts = 0;
 bool enabled_all = true;
 bool enabled_abxy = true;
 bool profile_led_lock = false;  // Extern.
+
+// Custom touch button implementation
+bool touch_button_is_pressed(Button *self) {
+    return touch_status();
+}
 
 void Profile__report(Profile *self) {
     if (!enabled_all) return;
@@ -69,6 +75,7 @@ void Profile__report(Profile *self) {
         self->right_thumbstick.report(&self->right_thumbstick);
     #endif
     self->gyro.report(&self->gyro);
+    self->touch_button.report(&self->touch_button);
 }
 
 void Profile__reset(Profile *self) {
@@ -95,6 +102,7 @@ void Profile__reset(Profile *self) {
     self->left_thumbstick.reset(&self->left_thumbstick);
     self->right_thumbstick.reset(&self->right_thumbstick);
     self->gyro.reset(&self->gyro);
+    self->touch_button.reset(&self->touch_button);
 }
 
 void Profile__load_from_config(Profile *self, CtrlProfile *profile) {
@@ -117,6 +125,11 @@ void Profile__load_from_config(Profile *self, CtrlProfile *profile) {
     self->r2 =         Button_from_ctrl(PIN_R2,         profile->sections[SECTION_R2]);
     self->l4 =         Button_from_ctrl(PIN_L4,         profile->sections[SECTION_L4]);
     self->r4 =         Button_from_ctrl(PIN_R4,         profile->sections[SECTION_R4]);
+    // Touch button - hardcoded to left mouse button
+    Actions touch_actions = {MOUSE_1, KEY_NONE, KEY_NONE, KEY_NONE};
+    Actions empty_actions = {KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE};
+    self->touch_button = Button_(PIN_VIRTUAL, NORMAL, touch_actions, empty_actions, empty_actions);
+    self->touch_button.is_pressed = touch_button_is_pressed;
     // Rotary.
     CtrlRotary up = profile->sections[SECTION_ROTARY_UP].rotary;
     CtrlRotary down = profile->sections[SECTION_ROTARY_DOWN].rotary;

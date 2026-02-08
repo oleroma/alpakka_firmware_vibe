@@ -59,6 +59,7 @@ struct Profile_struct {
     Button r1;
     Button r2;
     Button r4;
+    Button touch_button;
     Thumbstick left_thumbstick;
     Thumbstick right_thumbstick;
     Dhat dhat;
