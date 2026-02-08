@@ -1,4 +1,11 @@
-# Alpakka Firmware
+# Moddded alpakka firmware to use touch sensor as button. 
+
+Hardcoded to left mouse but can be changed in src/profile.c 
+
+    Actions touch_actions = {MOUSE_1, KEY_NONE, KEY_NONE, KEY_NONE};
+    Actions empty_actions = {KEY_NONE, KEY_NONE, KEY_NONE, KEY_NONE};
+    self->touch_button = Button_(PIN_VIRTUAL, NORMAL, touch_actions, empty_actions, empty_actions);
+    self->touch_button.is_pressed = touch_button_is_pressed;
 
 *Alpakka controller reference firmware (for Raspberry Pi Pico)*
 ## Project links
